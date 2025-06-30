@@ -4,22 +4,22 @@ from collections import deque
 
 class Fila:
     def __init__(self):
-        self._fila = deque()
+        self._fila: deque = deque()
 
     # Complexidade:
     # Pior caso:   O(1) - sempre enfileira ao fim da fila
     # Melhor caso: Ω(1) - idem, operação constante
     # Caso médio:  Θ(1) - sempre constante, independentemente do tamanho da fila
-    def enfileirar(self, linha_csv):
+    def enfileirar(self, linha_csv) -> None:
         self._fila.append(linha_csv)
 
     # Complexidade:
     # Pior caso:   O(1) - sempre desenfileira o primeiro da fila
     # Melhor caso: Ω(1) - idem, operação constante
     # Caso médio:  Θ(1) - sempre constante, independentemente do tamanho da fila
-    def desenfileirar(self) -> bool:
+    def desenfileirar(self) -> str:
         if self.esta_vazia():
-            return False
+            return "Não foi possível remover elemento. Fila vazia."
 
         self._fila.popleft()
         return self._fila[0]
