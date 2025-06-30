@@ -30,7 +30,6 @@ class SistemaAnaliseEngajamento:
         except Exception as e:
             print(f"Erro ao ler o arquivo CSV '{caminho_arquivo}': {e}")
             return None
-
     def processar_interacoes_da_fila(self) -> None:
         interacao_atual = self._fila_interacoes_brutas.desenfileirar()
 
@@ -42,7 +41,6 @@ class SistemaAnaliseEngajamento:
             - Tenta instanciar Interacao, lidando com validações.
             - Se Interacao válida, registra-a nos objetos Conteudo e Usuario correspondentes.
         """
-
         
     def gerar_relatorio_atividade_usuarios(self, top_n: int = None):
     
