@@ -33,6 +33,22 @@ class SistemaAnaliseEngajamento:
             return None
         
     def gerar_relatorio_atividade_usuarios(self, top_n: int = None):
+    
+        """
+    Gera um relatório dos usuários mais ativos com base no tempo total de consumo (em segundos).
+
+    Args:
+        top_n (int, opcional): Número de usuários mais ativos a exibir. Se None, exibe todos.
+
+    Complexidade:
+        - Percurso da árvore: O(n)
+        - Cálculo de tempo total: O(n)
+        - Ordenação (Quick Sort): O(n log n) em média
+        - Total: O(n log n)
+
+    Retorna:
+        None. Apenas imprime o relatório no console.
+        """ 
         # Passo 1: Obter todos os usuários da árvore em ordem
         usuarios = self._arvore_usuarios.percurso_em_ordem()
 
