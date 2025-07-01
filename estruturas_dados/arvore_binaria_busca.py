@@ -24,19 +24,28 @@ class ArvoreBinariaBusca:
     # Pior caso:   O(log n) - a estrutura mantém a altura controlada devido o autobalanceamento, garantindo que seja eficiente mesmo no pior caso.
     # Melhor caso: Ω(1) - o elemento buscado está na raiz ou próximo dela, o que permite que a busca seja muito rápida.
     # Caso médio:  Θ(log n) - a busca percorre um caminho proporcional à altura da árvore balanceada.
-    def buscar_elemento(self, chave: int) -> bool:
+    # --------------------------------------------------------------------------------------------
+    # Usando dicas de tipo, a partir da versão 3.10, é possível definir os possíveis retornos com o pipe (|).
+    # Caso fosse em versões anteriores à 3.10, seria necessário importar 'Union' da biblioteca 'typing', daí o a dica de retorno seria: Union[Conteudo, None].
+    def buscar_elemento(self, chave: int) -> object | None:
+        # É extremamente necessário que seja implementado um try-except para o caso de tentativa de localização de chave pois ao não localizar a chave solicitada,
+        # é retornado um 'raise' (palavra-chave para gerar uma exceção).
         try:
-            return bool(self._arvore_binaria.get_value(chave))
-        except Exception as e:
-            return False
+            return self._arvore_binaria.get_value(chave)
+        except Exception:
+            return None
 
     # Complexidade:
     # Pior caso:   O(n) - visita todos os nós, independentemente do tamanho e distribuição da árvore.
     # Melhor caso: Ω(n) - mesmo no melhor cenário, é necessário visitar todos os nós da árvore.
     # Caso médio:  Θ(n) - percorre todos os nós com custo constante por visita.
-    def percurso_in_order(self) -> None:
+    def percurso_in_order(self) -> list:
+        conteudos: list = []
+
         for _, elemento in self._arvore_binaria.items():
-            print(elemento)
+            conteudos.append(elemento)
+
+        return conteudos
 
 
 # Sub-classe de ArvoreBinariaBusca.
@@ -50,14 +59,14 @@ class ArvoreConteudos(ArvoreBinariaBusca):
     def inserir_conteudo(self, conteudo: Conteudo) -> None:
         self.inserir_elemento(conteudo.id_conteudo, conteudo)
 
-    def buscar_conteudo(self, id_conteudo: int) -> bool:
+    def buscar_conteudo(self, id_conteudo: int) -> Conteudo | None:
         return self.buscar_elemento(id_conteudo)
 
     def remover_conteudo(self, id_conteudo: int) -> None:
         self.remover_elemento(id_conteudo)
 
-    def percurso_em_ordem(self) -> None:
-        self.percurso_in_order()
+    def percurso_em_ordem(self) -> list:
+        return self.percurso_in_order()
 
 
 class ArvoreUsuarios(ArvoreBinariaBusca):
