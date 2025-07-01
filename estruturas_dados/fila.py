@@ -18,11 +18,12 @@ class Fila:
     # Melhor caso: Ω(1) - idem, operação constante
     # Caso médio:  Θ(1) - sempre constante, independentemente do tamanho da fila
     def desenfileirar(self) -> str:
+        # Verificação se a fila está vazia ou não. Se estiver, não será realizada operação alguma.
         if self.esta_vazia():
             return "Não foi possível remover elemento. Fila vazia."
 
-        self._fila.popleft()
-        return self._fila[0]
+        # Retorna o elemento a ser removido e a remove o elemento ao mesmo tempo
+        return self._fila.popleft()
 
     # Complexidade:
     # Pior caso:   O(1) - verificação do estado (constante) através da função len(), que por sua vez é constante
