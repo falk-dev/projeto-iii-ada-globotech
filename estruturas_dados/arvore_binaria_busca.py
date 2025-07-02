@@ -1,4 +1,4 @@
-from bintrees import AVLTree
+
 from entidades.conteudo import Conteudo
 
 
