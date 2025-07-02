@@ -1,5 +1,4 @@
 from bintrees import AVLTree
-from entidades.conteudo import Conteudo
 
 
 class ArvoreBinariaBusca:
@@ -16,7 +15,7 @@ class ArvoreBinariaBusca:
     # Complexidade:
     # Pior caso:   O(log n) - mesmo removendo nós que exigem vários ajustes, a árvore garante que a operação seja eficiente devido ao autobalanceamento.
     # Melhor caso: Ω(log n) - o nó a ser removido precisa de poucas reorganizações para manter o balanceamento.
-    # Caso médio:  Θ(log n) - a remoção envolve buscar o nó e realizar algumas reorganizações para reorganizar a árvore.
+    # Caso médio:  Θ(log n) - a remoção envolve buscar o nó e realizar algumas reorganizações para rebalancear a árvore.
     def remover_elemento(self, chave: int) -> None:
         self._arvore_binaria.remove(chave)
 
@@ -29,7 +28,7 @@ class ArvoreBinariaBusca:
     # Caso fosse em versões anteriores à 3.10, seria necessário importar 'Union' da biblioteca 'typing', daí o a dica de retorno seria: Union[Conteudo, None].
     def buscar_elemento(self, chave: int) -> object | None:
         # É extremamente necessário que seja implementado um try-except para o caso de tentativa de localização de chave pois ao não localizar a chave solicitada,
-        # é retornado um 'raise' (palavra-chave para gerar uma exceção).
+        # é retornado um 'raise' (instrução para gerar uma exceção).
         try:
             return self._arvore_binaria.get_value(chave)
         except Exception:
@@ -46,28 +45,3 @@ class ArvoreBinariaBusca:
             conteudos.append(elemento)
 
         return conteudos
-
-
-# Sub-classe de ArvoreBinariaBusca.
-# Pensando em trazer o conceito de Herança, fizemos a árvore de conteúdos como sub-classe de ArvoreBinariaBusca.
-# Definimos os métodos de inserção, remoção, busca e visualização, em que cada método desta sub-classe invoca os métodos
-# da classe principal (ArvoreBinariaBusca).
-class ArvoreConteudos(ArvoreBinariaBusca):
-    def __init__(self):
-        super().__init__()
-
-    def inserir_conteudo(self, conteudo: Conteudo) -> None:
-        self.inserir_elemento(conteudo.id_conteudo, conteudo)
-
-    def buscar_conteudo(self, id_conteudo: int) -> Conteudo | None:
-        return self.buscar_elemento(id_conteudo)
-
-    def remover_conteudo(self, id_conteudo: int) -> None:
-        self.remover_elemento(id_conteudo)
-
-    def percurso_em_ordem(self) -> list:
-        return self.percurso_in_order()
-
-
-class ArvoreUsuarios(ArvoreBinariaBusca):
-    pass
