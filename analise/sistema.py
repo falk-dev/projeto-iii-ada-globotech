@@ -1,7 +1,7 @@
 import csv
 
 from estruturas_dados.fila import Fila
-from estruturas_dados.arvore_binaria_busca import ArvoreConteudos, ArvoreUsuarios
+from estruturas_dados.arvore_binaria_busca import ArvoreBinariaBusca
 from entidades.plataforma import Plataforma
 from entidades.conteudo import Conteudo
 
@@ -11,10 +11,24 @@ from estruturas_dados.algoritmos_ordenacao import quick_sort
 class SistemaAnaliseEngajamento:
     def __init__(self):
         self._fila_interacoes_brutas: Fila = Fila()
-        self._arvore_conteudos: ArvoreConteudos = ArvoreConteudos()
-        self._arvore_usuarios: ArvoreUsuarios = ArvoreUsuarios()
+        self._arvore_conteudos: ArvoreBinariaBusca = ArvoreBinariaBusca()
+        self._arvore_usuarios: ArvoreBinariaBusca = ArvoreBinariaBusca()
         self._plataformas_registradas: dict[str, Plataforma] = {}
 
+    # -------- Métodos da árvore de conteúdos --------
+    def inserir_conteudo(self, conteudo: Conteudo) -> None:
+        self._arvore_conteudos.inserir_elemento(conteudo.id_conteudo, conteudo)
+
+    def buscar_conteudo(self, id_conteudo: int) -> Conteudo | None:
+        return self._arvore_conteudos.buscar_elemento(id_conteudo)
+
+    def remover_conteudo(self, id_conteudo: int) -> None:
+        self._arvore_conteudos.remover_elemento(id_conteudo)
+
+    def percurso_em_ordem(self) -> list:
+        return self._arvore_conteudos.percurso_in_order()
+
+    # -------- Métodos de processamento do arquivo csv --------
     def processar_interacoes_csv(self, caminho_arquivo: str) -> None:
         self._carregar_interacoes_csv(caminho_arquivo)
 
