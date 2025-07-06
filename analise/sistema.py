@@ -6,6 +6,7 @@ from estruturas_dados.algoritmos_ordenacao import quick_sort
 from estruturas_dados.arvore_binaria_busca import ArvoreBinariaBusca
 from entidades.plataforma import Plataforma
 from entidades.conteudo import Conteudo
+from entidades.usuario import Usuario
 
 from collections import defaultdict
 
@@ -29,6 +30,19 @@ class SistemaAnaliseEngajamento:
 
     def percurso_em_ordem(self) -> list:
         return self._arvore_conteudos.percurso_in_order()
+    
+        # -------- Métodos da árvore de usuário --------
+    def inserir_usuario(self, usuario: Usuario) -> None:
+        self._arvore_usuarios.inserir_elemento(usuario).id_usuario, usuario
+
+    def buscar_usuario(self, id_usuario: int) -> Usuario | None:
+        return self._arvore_usuarios.buscar_elemento(id_usuario)
+
+    def remover_usuario(self, id_usuario: int) -> None:
+        self._arvore_usuarios.remover_elemento(id_usuario)
+
+    def percurso_em_ordem(self) -> list:
+        return self._arvore_usuarios.percurso_in_order()
 
     # -------- Métodos de processamento do arquivo csv --------
     def processar_interacoes_csv(self, caminho_arquivo: str) -> None:
