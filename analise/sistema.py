@@ -7,6 +7,7 @@ from estruturas_dados.arvore_binaria_busca import ArvoreBinariaBusca
 from entidades.plataforma import Plataforma
 from entidades.conteudo import Conteudo
 from entidades.usuario import Usuario
+from entidades.interacao import Interacao
 
 from collections import defaultdict
 
@@ -28,12 +29,12 @@ class SistemaAnaliseEngajamento:
     def remover_conteudo(self, id_conteudo: int) -> None:
         self._arvore_conteudos.remover_elemento(id_conteudo)
 
-    def percurso_em_ordem(self) -> list:
+    def percurso_in_order(self) -> list:
         return self._arvore_conteudos.percurso_in_order()
     
         # -------- Métodos da árvore de usuário --------
     def inserir_usuario(self, usuario: Usuario) -> None:
-        self._arvore_usuarios.inserir_elemento(usuario).id_usuario, usuario
+        self._arvore_usuarios.inserir_elemento(usuario.id_usuario, usuario)
 
     def buscar_usuario(self, id_usuario: int) -> Usuario | None:
         return self._arvore_usuarios.buscar_elemento(id_usuario)
@@ -65,32 +66,56 @@ class SistemaAnaliseEngajamento:
             print(f"Erro ao ler o arquivo CSV '{caminho_arquivo}': {e}")
             return None
     def processar_interacoes_da_fila(self) -> None:
-        # Executa o loop abaixo enquanto a fila de interações não estiver vazia
-        # A cada execução do loop será realizado operações nas classes Plataforma, Conteudo, Usuario e Interacao
         while not self._fila_interacoes_brutas.esta_vazia():
-            # Armazenando em uma variável cada interação desenfileirada
-            interacao = self._fila_interacoes_brutas.desenfileirar()
+            linha = self._fila_interacoes_brutas.desenfileirar()
 
-            # Armazenando o id e nome do conteúdo de cada interação em uma variável
-            # Estrura dos get's abaixo:
-            # 1º argumento: chave (obrigatório)
-            # 2º argumento: valor para caso a chave solicitada não exista na estrutura (opcional)
-            id_conteudo = int(interacao.get("id_conteudo", 0))
-            nome_conteudo = interacao.get("nome_conteudo", "")
-            conteudo = Conteudo(id_conteudo, nome_conteudo)
+            # Extrai os dados da linha do CSV
+            id_usuario = linha.get("id_usuario")
+            id_conteudo = linha.get("id_conteudo")
+            nome_conteudo = linha.get("nome_conteudo")
+            timestamp_interacao = linha.get("timestamp_interacao")
+            nome_plataforma = linha.get("nome_plataforma")
+            tipo_interacao = linha.get("tipo_interacao")
+            watch_duration_seconds = linha.get("watch_duration_seconds")
+            comment_text = linha.get("comment_text", "")
 
-            # Caso após a busca na árvore não seja encontrado o id_conteudo do conteúdo em questão, será realizada uma inserção na BST.
-            if self._arvore_conteudos.buscar_conteudo(id_conteudo) is None:
-                self._arvore_conteudos.inserir_conteudo(conteudo)
+            # Conteúdo
+            conteudo = self._arvore_conteudos.buscar_elemento(int(id_conteudo))
+            if conteudo is None:
+                conteudo = Conteudo(int(id_conteudo), nome_conteudo)
+                self.inserir_conteudo(conteudo)
 
-        """
-        Para cada linha desenfileirada:
-            - Obtém/Cria o objeto Plataforma (pode continuar usando o dicionário existente).
-            - Obtém/Cria o objeto Usuario (utilizando buscar_usuario e inserir_usuario da sua _arvore_usuarios).
-            - Tenta instanciar Interacao, lidando com validações.
-            - Se Interacao válida, registra-a nos objetos Conteudo e Usuario correspondentes.
-        """
-        
+            # Usuário
+            usuario = self._arvore_usuarios.buscar_elemento(int(id_usuario))
+            if usuario is None:
+                usuario = Usuario(int(id_usuario))
+                self.inserir_usuario(usuario)
+
+            # Plataforma
+            plataforma = self._plataformas_registradas.get(nome_plataforma)
+            if plataforma is None:
+                plataforma = Plataforma(len(self._plataformas_registradas) + 1, nome_plataforma)
+                self._plataformas_registradas[nome_plataforma] = plataforma
+
+            # Cria a interação
+            try:
+                interacao_obj = Interacao(
+                    conteudo_associado=conteudo,
+                    id_usuario=id_usuario,
+                    timestamp_interacao=timestamp_interacao,
+                    plataforma_interacao=plataforma,
+                    tipo_interacao=tipo_interacao,
+                    watch_duration_seconds=watch_duration_seconds,
+                    comment_text=comment_text
+                )
+            except Exception as e:
+                print(f"Erro ao criar interação: {e}")
+                continue
+
+            # Registra a interação no usuário e no conteúdo
+            usuario.registrar_interacao(interacao_obj)
+            conteudo.adicionar_interacao(interacao_obj)
+
     def gerar_relatorio_atividade_usuarios(self, top_n: int = None):
     
         """
@@ -109,14 +134,17 @@ class SistemaAnaliseEngajamento:
         None. Apenas imprime o relatório no console.
         """ 
         # Passo 1: Obter todos os usuários da árvore em ordem
-        usuarios = self._arvore_usuarios.percurso_em_ordem()
+        usuarios = self._arvore_usuarios.percurso_in_order()
+        print(f"DEBUG: Usuários encontrados: {len(usuarios)}")
 
         # Passo 2: Criar lista de tuplas (usuario, tempo_total_consumo)
         usuarios_consumo = []
         for usuario in usuarios:
+            print(f"DEBUG: Usuário {usuario.id_usuario}")
+            print(f"DEBUG: Interações: {getattr(usuario, '_Usuario__interacoes_realizadas', None)}")
             tempo_total = sum(
                 interacao.watch_duration_seconds
-                for interacao in usuario._Usuario__interacoes_realizadas
+                for interacao in getattr(usuario, '_Usuario__interacoes_realizadas', [])
             )
             usuarios_consumo.append((usuario, tempo_total))
 
