@@ -325,7 +325,7 @@ class SistemaAnaliseEngajamento:
         for c, total, likes, shares, comments in engajamento[:10]:
             print(f"Conteúdo ID {c.id_conteudo} - {c.nome_conteudo} | Engajamento Total: {total}\n👍 {likes}\n🔄 {shares}\n💬 {comments}\n")
 
-    def relatorio_comentarios_por_conteudo(self):
+    def gerar_relatorio_comentarios_por_conteudo(self):
         conteudos = self._arvore_conteudos.percurso_in_order()
         print("\n--- Comentários por Conteúdo ---")
         for c in conteudos:
@@ -337,6 +337,45 @@ class SistemaAnaliseEngajamento:
             for texto in comentarios:
                 print(f"  - {texto}")
             print("")
+    
+    def gerar_relatorio_engajamento_conteudos(self, top_n: int = None):
+        """
+        Gera um relatório dos conteúdos com maior engajamento, com base no total de interações recebidas.
+
+        Args:
+            top_n (int, opcional): Número de conteúdos mais engajados a exibir. Se None, exibe todos.
+
+        Complexidade:
+            - Percurso da árvore: O(n)
+            - Cálculo de engajamento: O(n)
+            - Ordenação (Quick Sort): O(n log n) em média
+            - Total: O(n log n)
+        """
+        # Obtém todos os conteúdos armazenados na árvore binária (ordenados por ID)
+        conteudos = self._arvore_conteudos.percurso_in_order()
+
+        # Calcula o total de interações (engajamento) para cada conteúdo
+        engajamento_conteudos = []
+        for conteudo in conteudos:
+            total_interacoes = len(conteudo.interacoes)
+            engajamento_conteudos.append((conteudo, total_interacoes))
+
+        # Ordena os conteúdos com base na métrica de engajamento (número de interações)
+        # Usa quick_sort (poderia ser insertion_sort para listas pequenas)
+        from estruturas_dados.algoritmos_ordenacao import quick_sort
+        quick_sort(engajamento_conteudos, key=lambda x: x[1])
+
+        # Inverte a lista para ordem decrescente (do mais engajado para o menos)
+        engajamento_conteudos.reverse()
+
+        # Se top_n foi especificado, limita a lista aos primeiros N conteúdos
+        if top_n is not None:
+            engajamento_conteudos = engajamento_conteudos[:top_n]
+
+        # Exibe o relatório formatado no console
+        print("\n--- Relatório: Conteúdos com Maior Engajamento ---")
+        for conteudo, total in engajamento_conteudos:
+            print(f"Conteúdo ID {conteudo.id_conteudo} - Nome: {conteudo.nome_conteudo} - Total de Interações: {total}")
 
 def formatar_tempo(segundos: int) -> str:
     """
