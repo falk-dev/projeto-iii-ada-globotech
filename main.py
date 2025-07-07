@@ -43,10 +43,12 @@ def main():
 
         elif opcao == "4":
             print("📈 [Relatório de conteúdos mais engajados ainda não implementado]")
+            sistema.relatorio_conteudos_mais_engajados()
             input("⬆️ Pressione Enter para continuar...")
 
         elif opcao == "5":
             print("💬 [Relatório de comentários por conteúdo ainda não implementado]")
+            sistema.relatorio_comentarios_por_conteudo()
             input("⬆️ Pressione Enter para continuar...")
 
         elif opcao == "6":

@@ -135,13 +135,13 @@ class SistemaAnaliseEngajamento:
         """ 
         # Passo 1: Obter todos os usuários da árvore em ordem
         usuarios = self._arvore_usuarios.percurso_in_order()
-        print(f"DEBUG: Usuários encontrados: {len(usuarios)}")
+        #print(f"DEBUG: Usuários encontrados: {len(usuarios)}")
 
         # Passo 2: Criar lista de tuplas (usuario, tempo_total_consumo)
         usuarios_consumo = []
         for usuario in usuarios:
-            print(f"DEBUG: Usuário {usuario.id_usuario}")
-            print(f"DEBUG: Interações: {getattr(usuario, '_Usuario__interacoes_realizadas', None)}")
+            #print(f"DEBUG: Usuário {usuario.id_usuario}")
+            #print(f"DEBUG: Interações: {getattr(usuario, '_Usuario__interacoes_realizadas', None)}")
             tempo_total = sum(
                 interacao.watch_duration_seconds
                 for interacao in getattr(usuario, '_Usuario__interacoes_realizadas', [])
@@ -161,7 +161,7 @@ class SistemaAnaliseEngajamento:
         # Passo 6: Exibir o relatório
         print("\n--- Relatório: Usuários com Maior Tempo Total de Consumo ---")
         for usuario, tempo in usuarios_consumo:
-            print(f"Usuário ID {usuario.id_usuario} - Tempo Total: {tempo} segundos")
+            print(f"Usuário ID {usuario.id_usuario} - Tempo Total: {formatar_tempo(tempo)}")
             
 # Relatorio Analiticos
     def gerar_relatorio_analitico(self):
@@ -305,6 +305,38 @@ class SistemaAnaliseEngajamento:
         for c in conteudos:
             comentarios = sum(1 for i in c.interacoes_recebidas if i.tipo_interacao == "comment")
             print(f"Conteúdo ID {c.id_conteudo} - Comentários: {comentarios}")
+
+    def relatorio_conteudos_mais_engajados(self):
+        conteudos = self._arvore_conteudos.percurso_in_order()
+        engajamento = []
+        for conteudo in conteudos:
+            # Tenta usar interacoes_recebidas, se não existir, usa interacoes
+            interacoes = getattr(conteudo, 'interacoes_recebidas', None)
+            if interacoes is None:
+                interacoes = getattr(conteudo, 'interacoes', [])
+            likes = sum(1 for i in interacoes if getattr(i, 'tipo_interacao', None) == "like")
+            shares = sum(1 for i in interacoes if getattr(i, 'tipo_interacao', None) == "share")
+            comments = sum(1 for i in interacoes if getattr(i, 'tipo_interacao', None) == "comment")
+            total = likes + shares + comments
+            engajamento.append((conteudo, total, likes, shares, comments))
+        quick_sort(engajamento, key=lambda x: x[1])
+        engajamento.reverse()
+        print("\n--- Conteúdos Mais Engajados ---")
+        for c, total, likes, shares, comments in engajamento[:10]:
+            print(f"Conteúdo ID {c.id_conteudo} - {c.nome_conteudo} | Engajamento Total: {total}\n👍 {likes}\n🔄 {shares}\n💬 {comments}\n")
+
+    def relatorio_comentarios_por_conteudo(self):
+        conteudos = self._arvore_conteudos.percurso_in_order()
+        print("\n--- Comentários por Conteúdo ---")
+        for c in conteudos:
+            interacoes = getattr(c, 'interacoes_recebidas', None)
+            if interacoes is None:
+                interacoes = getattr(c, 'interacoes', [])
+            comentarios = [getattr(i, 'comment_text', '') for i in interacoes if getattr(i, 'tipo_interacao', None) == "comment"]
+            print(f"Conteúdo ID {c.id_conteudo} - {c.nome_conteudo} | 💬 Comentários: {len(comentarios)}")
+            for texto in comentarios:
+                print(f"  - {texto}")
+            print("")
 
 def formatar_tempo(segundos: int) -> str:
     """
