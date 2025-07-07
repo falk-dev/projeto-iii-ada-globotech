@@ -41,7 +41,7 @@ Além disso, este projeto utiliza a biblioteca externa [`bintrees`](https://pypi
 
 ```bash
 pip install bintrees
-
+```
 ---
 
 ## 👥 Colaboradores
