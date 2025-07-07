@@ -46,6 +46,15 @@ class SistemaAnaliseEngajamento:
         return self._arvore_usuarios.percurso_in_order()
 
     # -------- Métodos de processamento do arquivo csv --------
+    """
+    Lê o arquivo CSV e enfileira cada linha na estrutura de fila.
+
+    - Melhor caso (Ω): O(n), se o arquivo for lido corretamente sem erros e todas as linhas forem válidas.
+    - Caso médio (Θ): O(n), onde n é o número de linhas do CSV.
+    - Pior caso (O): O(n), leitura sequencial e enfileiramento de n itens.
+
+    Justificativa: a operação principal aqui é iterar sobre todas as linhas do CSV e armazená-las na fila.
+    """
     def processar_interacoes_csv(self, caminho_arquivo: str) -> None:
         self._carregar_interacoes_csv(caminho_arquivo)
 
@@ -65,6 +74,15 @@ class SistemaAnaliseEngajamento:
         except Exception as e:
             print(f"Erro ao ler o arquivo CSV '{caminho_arquivo}': {e}")
             return None
+    """
+    Processa cada interação da fila e atualiza as árvores e plataformas.
+
+    - Melhor caso (Ω): O(n log n), se todas as buscas e inserções nas árvores forem balanceadas e rápidas.
+    - Caso médio (Θ): O(n log n), onde n é o número de interações na fila, pois cada interação envolve múltiplas operações logarítmicas (inserção/busca em árvore).
+    - Pior caso (O): O(n log n), com custo dominante vindo das árvores AVL.
+
+    Justificativa: para cada linha desenfileirada, o método realiza buscas e inserções nas árvores AVL e em dicionário, o que mantém a complexidade logarítmica.
+    """
     def processar_interacoes_da_fila(self) -> None:
         while not self._fila_interacoes_brutas.esta_vazia():
             linha = self._fila_interacoes_brutas.desenfileirar()
@@ -116,28 +134,21 @@ class SistemaAnaliseEngajamento:
             usuario.registrar_interacao(interacao_obj)
             conteudo.adicionar_interacao(interacao_obj)
 
+    """
+    Gera relatório dos usuários mais ativos com base na quantidade de interações.
+
+    - Melhor caso (Ω): O(n log n), se a ordenação for eficiente e a árvore já estiver balanceada.
+    - Caso médio (Θ): O(n log n), onde n é o número de usuários.
+    - Pior caso (O): O(n²), caso o Quick Sort tenha piores divisões.
+
+    Justificativa: a extração dos usuários da árvore leva O(n), e a ordenação com Quick Sort pode variar de O(n log n) a O(n²).
+    """
     def gerar_relatorio_atividade_usuarios(self, top_n: int = None):
-    
-        """
-    Gera um relatório dos usuários mais ativos com base no tempo total de consumo (em segundos).
-
-    Args:
-        top_n (int, opcional): Número de usuários mais ativos a exibir. Se None, exibe todos.
-
-    Complexidade:
-        - Percurso da árvore: O(n)
-        - Cálculo de tempo total: O(n)
-        - Ordenação (Quick Sort): O(n log n) em média
-        - Total: O(n log n)
-
-    Retorna:
-        None. Apenas imprime o relatório no console.
-        """ 
-        # Passo 1: Obter todos os usuários da árvore em ordem
+        # Obtém todos os usuários da árvore em ordem
         usuarios = self._arvore_usuarios.percurso_in_order()
         #print(f"DEBUG: Usuários encontrados: {len(usuarios)}")
 
-        # Passo 2: Criar lista de tuplas (usuario, tempo_total_consumo)
+        # Cria lista de tuplas (usuario, tempo_total_consumo)
         usuarios_consumo = []
         for usuario in usuarios:
             #print(f"DEBUG: Usuário {usuario.id_usuario}")
@@ -148,22 +159,31 @@ class SistemaAnaliseEngajamento:
             )
             usuarios_consumo.append((usuario, tempo_total))
 
-        # Passo 3: Ordenar a lista com base no tempo total de consumo (decrescente)
+        # Ordena a lista com base no tempo total de consumo (decrescente)
         quick_sort(usuarios_consumo, key=lambda x: x[1])
 
-        # Passo 4: Reverter para ordem decrescente (Quick Sort faz crescente por padrão)
+        # Reverte para ordem decrescente (Quick Sort faz crescente por padrão)
         usuarios_consumo.reverse()
 
-        # Passo 5: Limitar ao top_n se for informado
+        # Limita ao top_n se for informado
         if top_n is not None:
             usuarios_consumo = usuarios_consumo[:top_n]
 
-        # Passo 6: Exibir o relatório
+        # Exibe o relatório
         print("\n--- Relatório: Usuários com Maior Tempo Total de Consumo ---")
         for usuario, tempo in usuarios_consumo:
             print(f"Usuário ID {usuario.id_usuario} - Tempo Total: {formatar_tempo(tempo)}")
             
-# Relatorio Analiticos
+# Relatorios Analiticos
+    """
+    Exibe um resumo analítico com métricas de engajamento por tipo de conteúdo e plataforma.
+
+    - Melhor caso (Ω): O(n), se os dados estiverem organizados e exigirem poucas iterações por categoria.
+    - Caso médio (Θ): O(n), onde n é o total de conteúdos percorridos na árvore.
+    - Pior caso (O): O(n), se todos os conteúdos tiverem muitos dados e diferentes tipos/plataformas.
+
+    Justificativa: percorre linearmente os conteúdos para agregar contagens e tempos por tipo/plataforma.
+    """
     def gerar_relatorio_analitico(self):
         """
         Gera relatórios analíticos de engajamento a partir dos dados processados.
@@ -306,6 +326,15 @@ class SistemaAnaliseEngajamento:
             comentarios = sum(1 for i in c.interacoes_recebidas if i.tipo_interacao == "comment")
             print(f"Conteúdo ID {c.id_conteudo} - Comentários: {comentarios}")
 
+    """
+    Exibe os conteúdos com maior engajamento baseado na soma de interações (like, comment, share).
+
+    - Melhor caso (Ω): O(n log n), com partições equilibradas no Quick Sort.
+    - Caso médio (Θ): O(n log n), onde n é o número de conteúdos na árvore.
+    - Pior caso (O): O(n²), se o Quick Sort operar em ordem ruim de pivôs (lista já ordenada, por exemplo).
+
+    Justificativa: a ordenação dos conteúdos por engajamento domina o custo, após a coleta linear dos dados.
+    """
     def relatorio_conteudos_mais_engajados(self):
         conteudos = self._arvore_conteudos.percurso_in_order()
         engajamento = []
@@ -325,6 +354,15 @@ class SistemaAnaliseEngajamento:
         for c, total, likes, shares, comments in engajamento[:10]:
             print(f"Conteúdo ID {c.id_conteudo} - {c.nome_conteudo} | Engajamento Total: {total}\n👍 {likes}\n🔄 {shares}\n💬 {comments}\n")
 
+    """
+    Lista a quantidade de comentários para cada conteúdo registrado.
+
+    - Melhor caso (Ω): O(n), se todos os conteúdos tiverem interações válidas do tipo 'comment'.
+    - Caso médio (Θ): O(n), onde n é o número de conteúdos na árvore.
+    - Pior caso (O): O(n), iteração simples em todos os conteúdos.
+
+    Justificativa: cada conteúdo é acessado uma vez para verificar interações do tipo 'comment', com complexidade linear.
+    """
     def gerar_relatorio_comentarios_por_conteudo(self):
         conteudos = self._arvore_conteudos.percurso_in_order()
         print("\n--- Comentários por Conteúdo ---")
@@ -338,19 +376,16 @@ class SistemaAnaliseEngajamento:
                 print(f"  - {texto}")
             print("")
     
+    """
+    Gera relatório de conteúdos mais engajados, ordenando pelo total de interações com Quick Sort.
+
+    - Melhor caso (Ω): O(n log n), quando a partição do Quick Sort é sempre equilibrada.
+    - Caso médio (Θ): O(n log n), onde n é o número de conteúdos a ordenar.
+    - Pior caso (O): O(n²), se os conteúdos já estiverem em ordem desfavorável e o pivô for mal escolhido.
+
+    Justificativa: o tempo de ordenação depende do algoritmo escolhido (Quick Sort neste caso), que no pior caso pode degradar para O(n²).
+    """
     def gerar_relatorio_engajamento_conteudos(self, top_n: int = None):
-        """
-        Gera um relatório dos conteúdos com maior engajamento, com base no total de interações recebidas.
-
-        Args:
-            top_n (int, opcional): Número de conteúdos mais engajados a exibir. Se None, exibe todos.
-
-        Complexidade:
-            - Percurso da árvore: O(n)
-            - Cálculo de engajamento: O(n)
-            - Ordenação (Quick Sort): O(n log n) em média
-            - Total: O(n log n)
-        """
         # Obtém todos os conteúdos armazenados na árvore binária (ordenados por ID)
         conteudos = self._arvore_conteudos.percurso_in_order()
 

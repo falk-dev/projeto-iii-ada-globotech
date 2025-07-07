@@ -30,6 +30,15 @@ class Conteudo:
         return self._interacoes
 
     # Método de interação
+    """
+    Adiciona uma nova interação à lista de interações do conteúdo.
+
+    - Melhor caso (Ω): O(1), inserção direta no fim da lista.
+    - Caso médio (Θ): O(1), para lista dinâmica bem gerenciada.
+    - Pior caso (O): O(1), constante em listas Python.
+
+    Justificativa: o método apenas usa `append`, que é O(1) na prática com listas Python.
+    """
     def adicionar_interacao(self, interacao: Interacao) -> None:
         self._interacoes.append(interacao)
 
@@ -37,6 +46,15 @@ class Conteudo:
     def adicionar_interacao(self, interacao: Interacao) -> None:
         self._interacoes.append(interacao)
 
+    """
+    Conta as ocorrências de cada tipo de interação usando Counter.
+
+    - Melhor caso (Ω): O(n), onde n é o número de interações.
+    - Caso médio (Θ): O(n), para varrer todos os itens uma vez.
+    - Pior caso (O): O(n), se todas as interações forem de tipos diferentes.
+
+    Justificativa: o método percorre todas as interações uma vez e agrupa por tipo.
+    """
     def calcular_contagem_por_tipo_interacao(self) -> dict:
         # Caso nao tenha interações cadastradas, retorna um dicionario vazio
         if not self._interacoes:
@@ -49,7 +67,16 @@ class Conteudo:
         # O counter é o responsável por transformar a lista acima em um dicionário
         # Então o resultado vai ser algo como: {'view_start': 1, 'like': 2, 'comment': 1}
         return Counter(tipos)
+    
+    """
+    Calcula a quantidade de interações do tipo 'like', 'comment' ou 'share'.
 
+    - Melhor caso (Ω): O(n), se todas forem do tipo engajamento.
+    - Caso médio (Θ): O(n), onde n é o número de interações.
+    - Pior caso (O): O(n), se nenhuma for de engajamento.
+
+    Justificativa: percorre toda a lista verificando o tipo de cada interação.
+    """
     def calcular_total_interacoes_engajamento(self) -> str:
         interacoes = {"like", "comment", "share"}
 
@@ -88,6 +115,15 @@ class Conteudo:
             print(f"{e}: não foi possível converter os segundos em HH:MM:SS.")
             return None
 
+    """
+    Soma os tempos de consumo (watch_duration_seconds) das interações.
+
+    - Melhor caso (Ω): O(n), se todas tiverem tempo válido.
+    - Caso médio (Θ): O(n), onde n é o número de interações.
+    - Pior caso (O): O(n), se muitas interações forem descartadas.
+
+    Justificativa: filtra e soma linearmente os tempos válidos.
+    """
     def calcular_tempo_total_consumo(self) -> str:
         tempo_assistido_conteudo = 0
 
@@ -108,6 +144,15 @@ class Conteudo:
 
         return relatorio
 
+    """
+    Calcula o tempo médio de consumo com base nas interações válidas.
+
+    - Melhor caso (Ω): O(n), se todas forem válidas.
+    - Caso médio (Θ): O(n), onde n é o número de interações.
+    - Pior caso (O): O(n), se houver muitas interações não relacionadas.
+
+    Justificativa: requer somar e contar as interações com `watch_duration_seconds`.
+    """
     def calcular_media_tempo_consumo(self) -> str:
         tempo = [
             interacoes.watch_duration_seconds
