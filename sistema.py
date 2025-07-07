@@ -6,8 +6,6 @@ from estruturas_dados.algoritmos_ordenacao import quick_sort
 from estruturas_dados.arvore_binaria_busca import ArvoreBinariaBusca
 from entidades.plataforma import Plataforma
 from entidades.conteudo import Conteudo
-from entidades.usuario import Usuario
-from entidades.interacao import Interacao
 
 from collections import defaultdict
 
@@ -28,21 +26,8 @@ class SistemaAnaliseEngajamento:
     def remover_conteudo(self, id_conteudo: int) -> None:
         self._arvore_conteudos.remover_elemento(id_conteudo)
 
-    def percurso_in_order(self) -> list:
-        return self._arvore_conteudos.percurso_in_order()
-    
-        # -------- Métodos da árvore de usuário --------
-    def inserir_usuario(self, usuario: Usuario) -> None:
-        self._arvore_usuarios.inserir_elemento(usuario.id_usuario, usuario)
-
-    def buscar_usuario(self, id_usuario: int) -> Usuario | None:
-        return self._arvore_usuarios.buscar_elemento(id_usuario)
-
-    def remover_usuario(self, id_usuario: int) -> None:
-        self._arvore_usuarios.remover_elemento(id_usuario)
-
     def percurso_em_ordem(self) -> list:
-        return self._arvore_usuarios.percurso_in_order()
+        return self._arvore_conteudos.percurso_in_order()
 
     # -------- Métodos de processamento do arquivo csv --------
     def processar_interacoes_csv(self, caminho_arquivo: str) -> None:
@@ -65,57 +50,25 @@ class SistemaAnaliseEngajamento:
             print(f"Erro ao ler o arquivo CSV '{caminho_arquivo}': {e}")
             return None
     def processar_interacoes_da_fila(self) -> None:
+        # Executa o loop abaixo enquanto a fila de interações não estiver vazia
+        # A cada execução do loop será realizado operações nas classes Plataforma, Conteudo, Usuario e Interacao
         while not self._fila_interacoes_brutas.esta_vazia():
-            linha = self._fila_interacoes_brutas.desenfileirar()
+            # Armazenando em uma variável cada interação desenfileirada
+            interacao = self._fila_interacoes_brutas.desenfileirar()
 
-            # Extrai os dados da linha do CSV
-            id_usuario = linha.get("id_usuario")
-            id_conteudo = linha.get("id_conteudo")
-            nome_conteudo = linha.get("nome_conteudo")
-            timestamp_interacao = linha.get("timestamp_interacao")
-            nome_plataforma = linha.get("nome_plataforma")
-            tipo_interacao = linha.get("tipo_interacao")
-            watch_duration_seconds = linha.get("watch_duration_seconds")
-            comment_text = linha.get("comment_text", "")
+            # Armazenando o id e nome do conteúdo de cada interação em uma variável
+            # Estrura dos get's abaixo:
+            # 1º argumento: chave (obrigatório)
+            # 2º argumento: valor para caso a chave solicitada não exista na estrutura (opcional)
+            id_conteudo = int(interacao.get("id_conteudo", 0))
+            nome_conteudo = interacao.get("nome_conteudo", "")
+            conteudo = Conteudo(id_conteudo, nome_conteudo)
 
-            # Conteúdo
-            conteudo = self._arvore_conteudos.buscar_elemento(int(id_conteudo))
-            if conteudo is None:
-                conteudo = Conteudo(int(id_conteudo), nome_conteudo)
-                self.inserir_conteudo(conteudo)
+            # Caso após a busca na árvore não seja encontrado o id_conteudo do conteúdo em questão, será realizada uma inserção na BST.
+            if self._arvore_conteudos.buscar_conteudo(id_conteudo) is None:
+                self._arvore_conteudos.inserir_conteudo(conteudo)
 
-            # Usuário
-            usuario = self._arvore_usuarios.buscar_elemento(int(id_usuario))
-            if usuario is None:
-                usuario = Usuario(int(id_usuario))
-                self.inserir_usuario(usuario)
 
-            # Plataforma
-            plataforma = self._plataformas_registradas.get(nome_plataforma)
-            if plataforma is None:
-                plataforma = Plataforma(len(self._plataformas_registradas) + 1, nome_plataforma)
-                self._plataformas_registradas[nome_plataforma] = plataforma
-
-            # Cria a interação
-            try:
-                interacao_obj = Interacao(
-                    conteudo_associado=conteudo,
-                    id_usuario=id_usuario,
-                    timestamp_interacao=timestamp_interacao,
-                    plataforma_interacao=plataforma,
-                    tipo_interacao=tipo_interacao,
-                    watch_duration_seconds=watch_duration_seconds,
-                    comment_text=comment_text
-                )
-            except Exception as e:
-                print(f"Erro ao criar interação: {e}")
-                continue
-
-            # Registra a interação no usuário e no conteúdo
-            usuario.registrar_interacao(interacao_obj)
-            conteudo.adicionar_interacao(interacao_obj)
-
-            
         """
         Para cada linha desenfileirada:
             - Obtém/Cria o objeto Plataforma (pode continuar usando o dicionário existente).
@@ -124,7 +77,6 @@ class SistemaAnaliseEngajamento:
             - Se Interacao válida, registra-a nos objetos Conteudo e Usuario correspondentes.
         """
         
-
     def gerar_relatorio_atividade_usuarios(self, top_n: int = None):
     
         """
@@ -143,17 +95,14 @@ class SistemaAnaliseEngajamento:
         None. Apenas imprime o relatório no console.
         """ 
         # Passo 1: Obter todos os usuários da árvore em ordem
-        usuarios = self._arvore_usuarios.percurso_in_order()
-        #print(f"DEBUG: Usuários encontrados: {len(usuarios)}")
+        usuarios = self._arvore_usuarios.percurso_em_ordem()
 
         # Passo 2: Criar lista de tuplas (usuario, tempo_total_consumo)
         usuarios_consumo = []
         for usuario in usuarios:
-            #print(f"DEBUG: Usuário {usuario.id_usuario}")
-            #print(f"DEBUG: Interações: {getattr(usuario, '_Usuario__interacoes_realizadas', None)}")
             tempo_total = sum(
                 interacao.watch_duration_seconds
-                for interacao in getattr(usuario, '_Usuario__interacoes_realizadas', [])
+                for interacao in usuario._Usuario__interacoes_realizadas
             )
             usuarios_consumo.append((usuario, tempo_total))
 
@@ -170,7 +119,7 @@ class SistemaAnaliseEngajamento:
         # Passo 6: Exibir o relatório
         print("\n--- Relatório: Usuários com Maior Tempo Total de Consumo ---")
         for usuario, tempo in usuarios_consumo:
-            print(f"Usuário ID {usuario.id_usuario} - Tempo Total: {formatar_tempo(tempo)}")
+            print(f"Usuário ID {usuario.id_usuario} - Tempo Total: {tempo} segundos")
             
 # Relatorio Analiticos
     def gerar_relatorio_analitico(self):
@@ -315,38 +264,6 @@ class SistemaAnaliseEngajamento:
             comentarios = sum(1 for i in c.interacoes_recebidas if i.tipo_interacao == "comment")
             print(f"Conteúdo ID {c.id_conteudo} - Comentários: {comentarios}")
 
-    def relatorio_conteudos_mais_engajados(self):
-        conteudos = self._arvore_conteudos.percurso_in_order()
-        engajamento = []
-        for conteudo in conteudos:
-            # Tenta usar interacoes_recebidas, se não existir, usa interacoes
-            interacoes = getattr(conteudo, 'interacoes_recebidas', None)
-            if interacoes is None:
-                interacoes = getattr(conteudo, 'interacoes', [])
-            likes = sum(1 for i in interacoes if getattr(i, 'tipo_interacao', None) == "like")
-            shares = sum(1 for i in interacoes if getattr(i, 'tipo_interacao', None) == "share")
-            comments = sum(1 for i in interacoes if getattr(i, 'tipo_interacao', None) == "comment")
-            total = likes + shares + comments
-            engajamento.append((conteudo, total, likes, shares, comments))
-        quick_sort(engajamento, key=lambda x: x[1])
-        engajamento.reverse()
-        print("\n--- Conteúdos Mais Engajados ---")
-        for c, total, likes, shares, comments in engajamento[:10]:
-            print(f"Conteúdo ID {c.id_conteudo} - {c.nome_conteudo} | Engajamento Total: {total}\n👍 {likes}\n🔄 {shares}\n💬 {comments}\n")
-
-    def relatorio_comentarios_por_conteudo(self):
-        conteudos = self._arvore_conteudos.percurso_in_order()
-        print("\n--- Comentários por Conteúdo ---")
-        for c in conteudos:
-            interacoes = getattr(c, 'interacoes_recebidas', None)
-            if interacoes is None:
-                interacoes = getattr(c, 'interacoes', [])
-            comentarios = [getattr(i, 'comment_text', '') for i in interacoes if getattr(i, 'tipo_interacao', None) == "comment"]
-            print(f"Conteúdo ID {c.id_conteudo} - {c.nome_conteudo} | 💬 Comentários: {len(comentarios)}")
-            for texto in comentarios:
-                print(f"  - {texto}")
-            print("")
-
 def formatar_tempo(segundos: int) -> str:
     """
     Formata o tempo em segundos para o formato HH:MM:SS.
@@ -355,5 +272,4 @@ def formatar_tempo(segundos: int) -> str:
     horas = segundos // 3600
     minutos = (segundos % 3600) // 60
     segundos_restantes = segundos % 60
-
     return f"{horas:02}:{minutos:02}:{segundos_restantes:02}"
