@@ -134,11 +134,6 @@ class SistemaAnaliseEngajamento:
             conteudo.adicionar_interacao(interacao_obj)
 
     """
-    Gera relatório dos usuários mais ativos com base na quantidade de interações.
-    """
-    def gerar_relatorio_atividade_usuarios(self, top_n: int = None):
-    
-    """
     Gera um relatório dos usuários mais ativos com base no tempo total de consumo (em segundos).
 
     Args:
