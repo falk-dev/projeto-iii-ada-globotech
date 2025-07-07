@@ -33,6 +33,17 @@ O projeto segue uma arquitetura modular, com organização em pacotes como `enti
 
 ---
 
+## 🔧 Requisitos
+
+Certifique-se de ter o **Python 3.10 ou superior** instalado.
+
+Além disso, este projeto utiliza a biblioteca externa [`bintrees`](https://pypi.org/project/bintrees/) para implementar árvores AVL. Para instalá-la, execute:
+
+```bash
+pip install bintrees
+
+---
+
 ## 👥 Colaboradores
 
 Este projeto foi desenvolvido em equipe como parte do desafio prático da trilha de Estruturas de Dados da Ada Tech:

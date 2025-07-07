@@ -42,13 +42,15 @@ def main():
             input("Pressione Enter para continuar...")
 
         elif opcao == "4":
-            print("📈 [Relatório de conteúdos mais engajados ainda não implementado]")
-            sistema.relatorio_conteudos_mais_engajados()
+            n = input("Quantos conteúdos mostrar? (Deixe vazio para todos): ")
+            if n.isdigit():
+                sistema.gerar_relatorio_engajamento_conteudos(top_n=int(n))
+            else:
+                sistema.gerar_relatorio_engajamento_conteudos()
             input("⬆️ Pressione Enter para continuar...")
 
         elif opcao == "5":
-            print("💬 [Relatório de comentários por conteúdo ainda não implementado]")
-            sistema.relatorio_comentarios_por_conteudo()
+            sistema.gerar_relatorio_comentarios_por_conteudo()
             input("⬆️ Pressione Enter para continuar...")
 
         elif opcao == "6":
