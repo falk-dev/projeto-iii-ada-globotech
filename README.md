@@ -1,6 +1,8 @@
 # 📊 Projeto III - Ada x Globotech  
 ### Análise de Engajamento com Estruturas de Dados
 
+![Capa do projeto III DS-PY-19 com os logos da Ada e da Globo ao topo, fundo gradiente roxo-azul e o botão “Grupo Pythonautas”](imagens/imagem1.jpg)
+
 Este repositório contém a implementação do terceiro projeto da parceria **Ada Tech x Globotech**, com foco na aplicação de **estruturas de dados fundamentais** para análise de dados de engajamento em mídias digitais do grupo Globo.
 
 ---
@@ -41,6 +43,19 @@ Este projeto foi desenvolvido em equipe como parte do desafio prático da trilha
 - [@devrsmenezes](https://github.com/devrsmenezes)  
 - [@isabelacmaia](https://github.com/isabelacmaia)
 - [@ugabiraposo](https://github.com/ugabiraposo)
+
+---
+
+## 📑 Apresentação & Review
+Abaixo você encontra os slides que apresentamos durante nossa entrega: os objetivos de aprendizagem, o resumo e a solução proposta, os principais desafios que enfrentamos e, por fim, nossos agradecimentos.
+
+![Objetivos de Aprendizagem da Fase 3.](imagens/imagem2.jpg)
+
+![Resumo da Fase 3 e a Solução Proposta](imagens/imagem3.jpg)
+
+![Desafios e Aprendizados que enfrentamos no desenvolvimento da fase 3](imagens/imagem4.jpg)
+
+![Slide de agradecimento com os logos da Ada e da Globo, fundo gradiente roxo-azul e o texto “Obrigado” centralizado](imagens/imagem5.jpg)
 
 ---
 
