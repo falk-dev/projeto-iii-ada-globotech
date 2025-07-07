@@ -329,11 +329,11 @@ class SistemaAnaliseEngajamento:
     """
     Exibe os conteúdos com maior engajamento baseado na soma de interações (like, comment, share).
 
-    - Melhor caso (Ω): O(n log n), com partições equilibradas no Quick Sort.
-    - Caso médio (Θ): O(n log n), onde n é o número de conteúdos na árvore.
-    - Pior caso (O): O(n²), se o Quick Sort operar em ordem ruim de pivôs (lista já ordenada, por exemplo).
+    - Melhor caso (Ω): O(n log n), se as partições do Quick Sort forem equilibradas.
+    - Caso médio (Θ): O(n log n), onde n é o número de conteúdos.
+    - Pior caso (O): O(n²), com escolhas ruins de pivô no Quick Sort.
 
-    Justificativa: a ordenação dos conteúdos por engajamento domina o custo, após a coleta linear dos dados.
+    Justificativa: o custo dominante é o Quick Sort, que opera após coleta linear dos dados.
     """
     def relatorio_conteudos_mais_engajados(self):
         conteudos = self._arvore_conteudos.percurso_in_order()
@@ -357,9 +357,9 @@ class SistemaAnaliseEngajamento:
     """
     Lista a quantidade de comentários para cada conteúdo registrado.
 
-    - Melhor caso (Ω): O(n), se todos os conteúdos tiverem interações válidas do tipo 'comment'.
-    - Caso médio (Θ): O(n), onde n é o número de conteúdos na árvore.
-    - Pior caso (O): O(n), iteração simples em todos os conteúdos.
+    - Melhor caso (Ω): O(n log n), se dados estiverem balanceados.
+    - Caso médio (Θ): O(n log n), onde n é o número de conteúdos.
+    - Pior caso (O): O(n²), em caso de pior partição no Quick Sort.
 
     Justificativa: cada conteúdo é acessado uma vez para verificar interações do tipo 'comment', com complexidade linear.
     """

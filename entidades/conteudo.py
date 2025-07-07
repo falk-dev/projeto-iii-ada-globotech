@@ -145,13 +145,13 @@ class Conteudo:
         return relatorio
 
     """
-    Calcula o tempo médio de consumo com base nas interações válidas.
+    Calcula o tempo médio de consumo com base nas interações com tempo válido (>0).
 
-    - Melhor caso (Ω): O(n), se todas forem válidas.
-    - Caso médio (Θ): O(n), onde n é o número de interações.
-    - Pior caso (O): O(n), se houver muitas interações não relacionadas.
+    - Melhor caso (Ω): O(n), onde todas as interações têm tempo > 0.
+    - Caso médio (Θ): O(n), iteração completa e média simples.
+    - Pior caso (O): O(n), se nenhuma interação for válida e divisão lançar exceção (mas aqui não lança por len>0).
 
-    Justificativa: requer somar e contar as interações com `watch_duration_seconds`.
+    Justificativa: percorre toda a lista de interações, filtra, soma e divide.
     """
     def calcular_media_tempo_consumo(self) -> str:
         tempo = [
