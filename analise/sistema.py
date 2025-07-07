@@ -11,7 +11,6 @@ from entidades.interacao import Interacao
 
 from collections import defaultdict
 
-
 class SistemaAnaliseEngajamento:
     def __init__(self):
         self._fila_interacoes_brutas: Fila = Fila()
@@ -136,6 +135,14 @@ class SistemaAnaliseEngajamento:
 
     """
     Gera relatório dos usuários mais ativos com base na quantidade de interações.
+    """
+    def gerar_relatorio_atividade_usuarios(self, top_n: int = None):
+    
+    """
+    Gera um relatório dos usuários mais ativos com base no tempo total de consumo (em segundos).
+
+    Args:
+        top_n (int, opcional): Número de usuários mais ativos a exibir. Se None, exibe todos.
 
     - Melhor caso (Ω): O(n log n), se a ordenação for eficiente e a árvore já estiver balanceada.
     - Caso médio (Θ): O(n log n), onde n é o número de usuários.
@@ -420,4 +427,5 @@ def formatar_tempo(segundos: int) -> str:
     horas = segundos // 3600
     minutos = (segundos % 3600) // 60
     segundos_restantes = segundos % 60
+
     return f"{horas:02}:{minutos:02}:{segundos_restantes:02}"
