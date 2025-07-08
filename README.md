@@ -76,4 +76,12 @@ Este repositório representa nosso progresso prático na disciplina **DS-PY-003 
 
 ---
 
+## 📚 Bibliografia
+
+Você pode consultar a bibliografia utilizada neste projeto no arquivo a seguir:
+
+👉 [bibliografia.pdf](./bibliografia.pdf)
+
+---
+
 > _"Não basta funcionar. Também precisa ser eficiente."_ 💡
